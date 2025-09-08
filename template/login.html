@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset = "utf-8">
+    <title>Login- Reviewing Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <div class = "container">
+        <header>
+            <img src = "{{ url_for('static', filename='logo.png')}}" alt="Logo" class = "logo">
+            <h1 class="site-title">Reviewing Project</h1>
+        </header>
+        <div class = "login-box">
+            <form method = "POST" action = "{{url_for('login')}}">
+                <label for="username">Username:</label>
+                <input type= "text" id = "username" name = "username" required>
+                
+                <label for="password">Password:</label>
+                <input type= "text" id = "password" name = "password" required>
+                
+                <div class = 'button-group'>
+                    <button type = 'submit' name = 'action' value="login">Login</button>
+                    <button type = 'submit' name = 'action' value="register">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -118,3 +118,4 @@ def add_problems(title, description, grade, subject_name):
     conn.commit()
     close_cursor()
     return True
+ 
