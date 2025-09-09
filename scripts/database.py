@@ -47,7 +47,7 @@ def create_tasks_table():
     create_cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS TASKS (
                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                   TITLES TEXT NOT NULL,
+                   TITLE TEXT NOT NULL,
                    DESCRIPTION TEXT,
                    GRADE INTEGER CHECK(GRADE IN (10, 11, 12)) NOT NULL,
                    SUBJECT_ID INTEGER NOT NULL,
@@ -83,7 +83,7 @@ def register_user(username, password, name, grade):
     global cursor, conn
     create_cursor()
     try:
-        cursor.execute("INSERT INTO USERS (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT INTO USERS_TABLE (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)",
                        (username, hash_password(password), name, grade))
         conn.commit()
         return True
@@ -95,7 +95,7 @@ def register_user(username, password, name, grade):
 def login_user(username, password):
     global cursor, conn
     create_cursor()
-    cursor.execute("SELECT ID, PASSWORD, NAME, GRADE FROM USERS WHERE NAME =?", (username,))
+    cursor.execute("SELECT ID, PASSWORD, USERNAME, GRADE FROM USERS WHERE USERNAME =?", (username,))
     row = cursor.fetchone()
     close_cursor()
     if row and row[1] == hash_password(password):
