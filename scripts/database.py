@@ -118,4 +118,46 @@ def add_problems(title, description, grade, subject_name):
     conn.commit()
     close_cursor()
     return True
- 
+def seed_data():
+    global cursor, conn
+    create_cursor()
+
+    # ---- Users ----
+    users = [
+        ("alice", hash_password("password123"), "Alice Johnson", 10),
+        ("bob", hash_password("mypassword"), "Bob Smith", 11),
+        ("charlie", hash_password("secretpass"), "Charlie Brown", 12),
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO USERS (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)", users)
+
+    # ---- Subjects (already added in create_subjects_table, but we ensure they exist) ----
+    subjects = ['Trigonometry', 'Algebra', 'Physics', 'Chemistry', 'Computer Science']
+    cursor.executemany("INSERT OR IGNORE INTO SUBJECTS (NAME) VALUES (?)", [(s,) for s in subjects])
+
+    # ---- Tasks ----
+    tasks = [
+        ("Basic Trigonometric Ratios", "Learn sine, cosine, and tangent.", 10, "Trigonometry"),
+        ("Quadratic Equations", "Solve quadratic equations using formula and factoring.", 10, "Algebra"),
+        ("Newton’s Laws", "Understand the three laws of motion.", 11, "Physics"),
+        ("Periodic Table", "Memorize groups and periods.", 11, "Chemistry"),
+        ("Sorting Algorithms", "Implement bubble sort and quicksort.", 12, "Computer Science"),
+    ]
+
+    for title, description, grade, subject in tasks:
+        cursor.execute("SELECT ID FROM SUBJECTS WHERE NAME = ?", (subject,))
+        row = cursor.fetchone()
+        if row:
+            subject_id = row[0]
+            cursor.execute("INSERT OR IGNORE INTO TASKS (TITLE, DESCRIPTION, GRADE, SUBJECT_ID) VALUES (?, ?, ?, ?)",
+                           (title, description, grade, subject_id))
+
+    # ---- Completed Tasks ----
+    completed = [
+        (1, 1),  # Alice completed Trigonometry task
+        (2, 3),  # Bob completed Physics task
+        (3, 5),  # Charlie completed Sorting Algorithms task
+    ]
+    cursor.executemany("INSERT OR IGNORE INTO COMPLETED_TASKS (USER_ID, TASK_ID) VALUES (?, ?)", completed)
+
+    conn.commit()
+    close_cursor()
