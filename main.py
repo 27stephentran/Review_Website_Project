@@ -3,7 +3,7 @@ import scripts.database as db
 
 app = Flask(__name__)
 db.init_db()
-secret_key = "verysecretkey"
+app.secret_key = "verysecretkey"
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
@@ -19,14 +19,14 @@ def login():
             if user:
                 session['user'] = user
                 flash(f"Welcome {user['name']} (Grade: {user['grade']})!", "success")
-                return url_for("dasboard")
+                return url_for("dashboard")
             else:
                 flash("Invalid username or password", "danger")
         elif action == 'register':
             return redirect(url_for('register'))
     return render_template('login.html')
 
-@app.route('/register')
+@app.route('/register', methods=['GET', 'POST'])
 def register():    
     if request.method == "POST":
         action = request.form['action']
