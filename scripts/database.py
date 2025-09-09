@@ -63,7 +63,7 @@ def create_completed_tasks_table():
                    USER_ID INTEGER NOT NULL,
                    TASK_ID INTEGER NOT NULL,
                    COMPLETED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                   FOREIGN KEY(USER_ID) REFERENCES USERS(ID),
+                   FOREIGN KEY(USER_ID) REFERENCES USER_TABLE(ID),
                    FOREIGN KEY(TASK_ID) REFERENCES TASKS(ID))""")
 
     conn.commit()
@@ -83,7 +83,7 @@ def register_user(username, password, name, grade):
     global cursor, conn
     create_cursor()
     try:
-        cursor.execute("INSERT INTO USERS_TABLE (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)",
+        cursor.execute("INSERT INTO USER_TABLE (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)",
                        (username, hash_password(password), name, grade))
         conn.commit()
         return True
@@ -95,7 +95,7 @@ def register_user(username, password, name, grade):
 def login_user(username, password):
     global cursor, conn
     create_cursor()
-    cursor.execute("SELECT ID, PASSWORD, USERNAME, GRADE FROM USERS WHERE USERNAME =?", (username,))
+    cursor.execute("SELECT ID, PASSWORD, USERNAME, GRADE FROM USER_TABLE WHERE USERNAME =?", (username,))
     row = cursor.fetchone()
     close_cursor()
     if row and row[1] == hash_password(password):
@@ -128,7 +128,7 @@ def seed_data():
         ("bob", hash_password("mypassword"), "Bob Smith", 11),
         ("charlie", hash_password("secretpass"), "Charlie Brown", 12),
     ]
-    cursor.executemany("INSERT OR IGNORE INTO USERS (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)", users)
+    cursor.executemany("INSERT OR IGNORE INTO USER_TABLE (USERNAME, PASSWORD, NAME, GRADE) VALUES (?, ?, ?, ?)", users)
 
     # ---- Subjects (already added in create_subjects_table, but we ensure they exist) ----
     subjects = ['Trigonometry', 'Algebra', 'Physics', 'Chemistry', 'Computer Science']

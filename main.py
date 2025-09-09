@@ -3,6 +3,8 @@ import scripts.database as db
 
 app = Flask(__name__)
 db.init_db()
+db.seed_data()
+
 app.secret_key = "verysecretkey"
 
 @app.route('/', methods=['GET', 'POST'])
@@ -19,7 +21,7 @@ def login():
             if user:
                 session['user'] = user
                 flash(f"Welcome {user['name']} (Grade: {user['grade']})!", "success")
-                return url_for("dashboard")
+                return redirect(url_for("dashboard"))
             else:
                 flash("Invalid username or password", "danger")
         elif action == 'register':
