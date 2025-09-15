@@ -80,3 +80,14 @@ header {
 .button-group button:hover {
     background-color: #0056b3;
 }
+
+.dashboard-box {
+    background: #f9f9f9;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+
+.flash.success {color:green;}
+.flash.danger {color:red;}
+.flash.info {color:blue;}
