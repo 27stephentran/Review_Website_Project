@@ -16,12 +16,29 @@
             <h2>Welcome To Your Dashboard</h2>
             <p>Hello <strong>{{ user.name }}</strong> (Grade: {{ user.grade }})</p>
 
-            <p>This is your Dashboard. From here you can:</p>
-            <ul>
-                <li>View Your Task</li>
-                <li>Mark tasks as completed</li>
-                <li>Check your progress</li>
-            </ul>
+            <form method ="POST" action = "{{ url_for('dashboard') }}">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Choose</th>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Subject</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for task in tasks %}
+                        <tr>
+                            <td><input type="radio" name ="task_id" value= "{{ task[0] }}"></td>
+                            <td> {{ task[1] }}</td>
+                            <td> {{ task[2] }}</td>
+                            <td> {{ task[3] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <button type="submit">Select taks</button>
+            </form>
             
             <form action ="{{ url_for('logout')}}" method ="GET">
                 <button type="submit">Logout</button>
