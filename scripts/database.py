@@ -118,9 +118,16 @@ def add_problems(title, description, grade, subject_name):
     conn.commit()
     close_cursor()
     return True
+
 def seed_data():
     global cursor, conn
     create_cursor()
+    # This to help stop the seed data from getting add into the db again and again
+    cursor.execute("SELECT COUNT(*) FROM TASKS")
+    count = cursor.fetchone()[0]
+    if count > 0:
+        close_cursor()
+        return
 
     # ---- Users ----
     users = [
@@ -189,10 +196,21 @@ def get_tasks_by_grade(grade):
 
     cursor.execute("""
         SELECT T.ID, T.TITLE, T.DESCRIPTION, S.NAME as SUBJECT
-        FROM TASKs T
+        FROM TASKS T
         JOIN SUBJECTS S ON T.SUBJECT_ID = S.ID
         WHERE T.GRADE = ?
-        """, (grade,))
+        """, (int(grade),))
     tasks = cursor.fetchall()
     close_cursor()
     return tasks
+
+def debug_show_all_tasks():
+    create_cursor()
+    cursor.execute("SELECT ID, TITLE, GRADE FROM TASKS")
+    rows = cursor.fetchall()
+    for row in rows:
+        print(row)
+    close_cursor()
+
+# debug_show_all_tasks()
+

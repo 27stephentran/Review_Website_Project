@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import scripts.database as db 
 
 app = Flask(__name__)
+
 db.init_db()
 db.seed_data()
 
@@ -58,7 +59,7 @@ def dashboard():
         flash(f"you have selected task ID: {task_id}", 'info')
         return redirect(url_for('dashboard'))
     tasks = db.get_tasks_by_grade(user['grade'])
-    print(tasks)
+    
     return render_template("dashboard.html", user=user, tasks = tasks)
 
 @app.route('/logout')

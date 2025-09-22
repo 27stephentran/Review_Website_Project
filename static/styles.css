@@ -81,11 +81,36 @@ header {
     background-color: #0056b3;
 }
 
+.container-dashboard { 
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;  
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 8x;
+    text-align: center;
+}
+
+th {
+    background-color: #f2f2f2;
+}
 .dashboard-box {
     background: #f9f9f9;
     padding: 20px;
     margin-top: 20px;
     border-radius: 6px;
+    
 }
 
 .flash.success {color:green;}
