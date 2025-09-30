@@ -1,3 +1,31 @@
+# Mark a task as completed for a user
+def mark_task_completed(user_id, task_id):
+    global cursor, conn
+    create_cursor()
+    cursor.execute("INSERT OR IGNORE INTO COMPLETED_TASKS (USER_ID, TASK_ID) VALUES (?, ?)", (user_id, task_id))
+    conn.commit()
+    close_cursor()
+def add_question(task_id, question_text, option_a, option_b, option_c, option_d, correct_option):
+    global cursor, conn
+    create_cursor()
+    cursor.execute("""
+        INSERT INTO QUESTIONS (TASK_ID, QUESTION_TEXT, OPTION_A, OPTION_B, OPTION_C, OPTION_D, CORRECT_OPTION)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (task_id, question_text, option_a, option_b, option_c, option_d, correct_option))
+    conn.commit()
+    close_cursor()
+
+def get_questions_by_task(task_id):
+    global cursor, conn
+    create_cursor()
+    cursor.execute("""
+        SELECT ID, QUESTION_TEXT, OPTION_A, OPTION_B, OPTION_C, OPTION_D, CORRECT_OPTION
+        FROM QUESTIONS
+        WHERE TASK_ID = ?
+    """, (task_id,))
+    questions = cursor.fetchall()
+    close_cursor()
+    return questions
 import sqlite3
 import hashlib
 
@@ -69,11 +97,29 @@ def create_completed_tasks_table():
     conn.commit()
     close_cursor()
 
+def create_questions_table():
+    global cursor, conn
+    create_cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS QUESTIONS (
+        ID INTEGER PRIMARY KEY AUTOINCREMENT,
+        TASK_ID INTEGER NOT NULL,
+        QUESTION_TEXT TEXT NOT NULL,
+        OPTION_A TEXT NOT NULL,
+        OPTION_B TEXT NOT NULL,
+        OPTION_C TEXT NOT NULL,
+        OPTION_D TEXT NOT NULL,
+        CORRECT_OPTION TEXT NOT NULL,
+        FOREIGN KEY(TASK_ID) REFERENCES TASKS(ID)
+    )""")
+    conn.commit()
+    close_cursor()
+
 def init_db():
     create_user_table()
     create_subjects_table()
     create_tasks_table()
     create_completed_tasks_table()
+    create_questions_table()
 
 
 def hash_password(password):
@@ -199,6 +245,7 @@ def get_tasks_by_grade(grade):
         FROM TASKS T
         JOIN SUBJECTS S ON T.SUBJECT_ID = S.ID
         WHERE T.GRADE = ?
+        ORDER BY S.NAME ASC
         """, (int(grade),))
     tasks = cursor.fetchall()
     close_cursor()
@@ -214,3 +261,11 @@ def debug_show_all_tasks():
 
 # debug_show_all_tasks()
 
+def get_completed_task_ids(user_id):
+    global conn, cursor
+    create_cursor()
+    cursor.execute("""SELECT TASK_ID FROM COMPLETED_TASKS WHERE USER_ID = ?""", (user_id,))
+    rows = cursor.fetchall()
+    close_cursor()
+    # Return a flat list of task IDs
+    return [row[0] for row in rows]

@@ -4,6 +4,7 @@
     <meta charset = "utf-8">
     <title>Dashboard- Reviewing Project</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+    <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
     <div class = "container-dashboard">
@@ -14,8 +15,23 @@
         <div class ="dashboard-box">
             <h2>Welcome To Your Dashboard</h2>
             <p>Hello <strong>{{ user.name }}</strong> (Grade: {{ user.grade }})</p>
-
-            <form method ="POST" action = "{{ url_for('dashboard') }}">
+            <p>Total tasks: {{total_task}} | Done Task : {{done_tasks}} | Undone Tasks: {{undone_tasks}}</p>
+            <div class ="progress-container">
+                <div class = "progress-bar" style = "width: {{ percent_done }}%">
+                    {{ percent_done|round(1) }} %
+                </div>
+            </div>
+            <!-- Subject Filter -->
+            <form method="get" action="{{ url_for('dashboard') }}" style="margin-bottom: 1em;">
+                <label for="subject">Filter by Subject:</label>
+                <select name="subject" id="subject" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    {% for subj in subjects %}
+                        <option value="{{ subj }}" {% if selected_subject == subj %}selected{% endif %}>{{ subj }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            <form method ="POST" action = "{{ url_for('dashboard', subject=selected_subject, page=page) }}">
                 <table>
                     <thead>
                         <tr>
@@ -36,9 +52,21 @@
                         {% endfor %}
                     </tbody>
                 </table>
-                <button type="submit">Select taks</button>
+                <button type="submit">Select task</button>
             </form>
-            
+            <!-- Paging Controls -->
+            <div style="margin-top:1em; text-align:center;">
+                {% if total_pages > 1 %}
+                    {% for p in range(1, total_pages+1) %}
+                        {% if p == page %}
+                            <strong>{{ p }}</strong>
+                        {% else %}
+                            <a href="{{ url_for('dashboard', page=p, subject=selected_subject) }}">{{ p }}</a>
+                        {% endif %}
+                        {% if not loop.last %} | {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
             <form action ="{{ url_for('logout')}}" method ="GET">
                 <button type="submit">Logout</button>
             </form>

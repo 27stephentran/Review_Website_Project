@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Quiz Result - Reviewing Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+    <meta http-equiv="refresh" content="5;url={{ url_for('dashboard') }}">
+</head>
+<body>
+    <div class="container-dashboard">
+        <header>
+            <img src="{{ url_for('static', filename='logo.png')}}" alt="Logo" class="logo">
+            <h1 class="site-title">Reviewing Project</h1>
+        </header>
+        <div class="dashboard-box">
+            <h2>Quiz Results</h2>
+            <p>Total Questions: <strong>{{ total }}</strong></p>
+            <p>Correct Answers: <strong>{{ correct }}</strong></p>
+            <p>Score: <strong>{{ percent|round(1) }}%</strong></p>
+            <p>You will be redirected to the dashboard in 5 seconds...</p>
+            <a href="{{ url_for('dashboard') }}" class="button-group"><button>Back to Dashboard</button></a>
+        </div>
+    </div>
+</body>
+</html>

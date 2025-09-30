@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Quiz - Reviewing Project</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css')}}">
+</head>
+<body>
+    <div class="container-dashboard">
+        <header>
+            <img src="{{ url_for('static', filename='logo.png')}}" alt="Logo" class="logo">
+            <h1 class="site-title">Reviewing Project</h1>
+        </header>
+        <div class="dashboard-box" id="quiz-box">
+            <h2>Quiz</h2>
+            {% if questions and questions|length > 0 %}
+            <form id="quiz-form" method="POST">
+                <div id="question-area">
+                    <!-- Question and options will be injected here by JS -->
+                </div>
+                <div class="button-group">
+                    <button type="button" id="prev-btn" style="display:none">Previous</button>
+                    <button type="button" id="next-btn">Next</button>
+                    <button type="submit" id="submit-btn" style="display:none">Submit</button>
+                </div>
+            </form>
+            <script>
+                const questions = JSON.parse('{{ questions|tojson|safe }}');
+                let current = 0;
+                let answers = Array(questions.length).fill(null);
+
+                function renderQuestion(idx) {
+                    const q = questions[idx];
+                    let html = `<div class='question-box'>`;
+                    html += `<div class='question'><strong>Q${idx+1}:</strong> ${q[1]}</div>`;
+                    html += `<div class='ans-row'>`;
+                    ['A','B','C','D'].forEach((opt, i) => {
+                        const checked = answers[idx] === opt ? 'checked' : '';
+                        html += `<label class='answer'><input type='radio' name='answer' value='${opt}' ${checked}> ${q[i+2]}</label>`;
+                    });
+                    html += `</div></div>`;
+                    document.getElementById('question-area').innerHTML = html;
+                    document.getElementById('prev-btn').style.display = idx > 0 ? '' : 'none';
+                    document.getElementById('next-btn').style.display = idx < questions.length-1 ? '' : 'none';
+                    document.getElementById('submit-btn').style.display = idx === questions.length-1 ? '' : 'none';
+                }
+
+                document.addEventListener('DOMContentLoaded', function() {
+                    renderQuestion(current);
+                    document.getElementById('quiz-form').addEventListener('change', function(e) {
+                        if (e.target.name === 'answer') {
+                            answers[current] = e.target.value;
+                        }
+                    });
+                    document.getElementById('next-btn').addEventListener('click', function() {
+                        if (!answers[current]) {
+                            alert('Please select an answer before continuing.');
+                            return;
+                        }
+                        current++;
+                        renderQuestion(current);
+                    });
+                    document.getElementById('prev-btn').addEventListener('click', function() {
+                        current--;
+                        renderQuestion(current);
+                    });
+                    document.getElementById('quiz-form').addEventListener('submit', function(e) {
+                        if (!answers[current]) {
+                            alert('Please select an answer before submitting.');
+                            e.preventDefault();
+                            return;
+                        }
+                        // Add hidden inputs for answers
+                        answers.forEach((ans, idx) => {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = `answer_${questions[idx][0]}`;
+                            input.value = ans;
+                            e.target.appendChild(input);
+                        });
+                    });
+                });
+            </script>
+            {% else %}
+                <div>No questions available for this quiz.</div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
